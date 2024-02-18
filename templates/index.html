@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Currency Update</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            padding: 50px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Currency Update</h1>
+    <div class="row">
+        <div class="col-6">
+            <button id="updateButton" class="btn btn-primary">Update Currency Rates</button>
+        </div>
+        <div class="col-6">
+            <button id="lastUpdateButton" class="btn btn-secondary">Last Update Time</button>
+        </div>
+    </div>
+    <div id="updateResult"></div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+$(document).ready(function () {
+    $("#updateButton").click(function () {
+        $.ajax({
+            url: "/update",
+            type: "GET",
+            success: function (data) {
+                $("#updateResult").text("Currency rates updated successfully: " + data);
+            },
+            error: function () {
+                $("#updateResult").text("Failed to update currency rates.");
+            }
+        });
+    });
+
+    $("#lastUpdateButton").click(function () {
+        $.ajax({
+            url: "/last_update",
+            type: "GET",
+            success: function (data) {
+                $("#lastUpdateResult").text("Last update time: " + data);
+            },
+            error: function () {
+                $("#lastUpdateResult").text("Failed to fetch last update time.");
+            }
+        });
+    });
+});
+</script>
+</body>
+</html>

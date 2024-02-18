@@ -1,8 +1,8 @@
-from consts import db, Base
+from consts import Base, db
 
 
 class Currency(Base):
-    __tablename__ = 'currency'
+    __tablename__ = "currency"
     id = db.Column(db.Integer, primary_key=True)
     currency_code = db.Column(db.String(3))
     rate = db.Column(db.Float)

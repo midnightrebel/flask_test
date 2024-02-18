@@ -1,8 +1,9 @@
-import aiohttp
-from sqlalchemy import select
-from consts import async_session, engine, Base, BASE_URL
 import datetime
 
+import aiohttp
+from sqlalchemy import select
+
+from consts import BASE_URL, Base, async_session, engine
 from models import Currency
 
 
@@ -10,21 +11,24 @@ async def update_currency_rates():
     async with aiohttp.ClientSession() as session:
         async with session.get(BASE_URL) as resp:
             data = await resp.json()
-            timestamp_str = data['meta']["last_updated_at"]
-            timestamp = datetime.datetime.strptime(timestamp_str, '%Y-%m-%dT%H:%M:%SZ')
+            timestamp_str = data["meta"]["last_updated_at"]
+            timestamp = datetime.datetime.strptime(timestamp_str, "%Y-%m-%dT%H:%M:%SZ")
 
             async with async_session as async_sec:
                 for currency, rate_data in data["data"].items():
-                    rate = rate_data['value']
+                    rate = rate_data["value"]
                     existing_currency = await async_sec.execute(
-                        select(Currency).where(Currency.currency_code == currency))
+                        select(Currency).where(Currency.currency_code == currency)
+                    )
                     existing_currency = existing_currency.scalar_one_or_none()
 
                     if existing_currency:
                         existing_currency.rate = rate
                         existing_currency.timestamp = timestamp
                     else:
-                        new_currency = Currency(currency_code=currency, rate=rate, timestamp=timestamp)
+                        new_currency = Currency(
+                            currency_code=currency, rate=rate, timestamp=timestamp
+                        )
                         async_sec.add(new_currency)
                 await async_sec.commit()
 
